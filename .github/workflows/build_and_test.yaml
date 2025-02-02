@@ -1,0 +1,45 @@
+
+name: Build and Test
+
+on: [push]
+
+env:
+  Solution_Name: WgetChrome
+  Test_Project_Path: Tests\Tests.csproj
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+        cache: true
+
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2
+      with:
+          nuget-version: '5.x'
+
+    - name: Restore NuGet packages
+      run: nuget restore ${{ env.Solution_Name }}.sln
+
+    - name: Execute unit tests
+      run: dotnet test
