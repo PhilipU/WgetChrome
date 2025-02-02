@@ -45,5 +45,8 @@ jobs:
     - name: Check code style
       run: dotnet format --check
 
+    - name: Build solution
+      run: msbuild ${{ env.Solution_Name }}.sln /p:Configuration=${{ matrix.configuration }}
+
     - name: Execute unit tests
       run: dotnet test
