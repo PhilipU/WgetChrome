@@ -43,7 +43,7 @@ jobs:
       run: dotnet tool install -g dotnet-format
 
     - name: Check code style
-      run: dotnet format --check
+      run: dotnet format ${{ env.Solution_Name }}.sln --check
 
     - name: Build solution
       run: msbuild ${{ env.Solution_Name }}.sln /p:Configuration=${{ matrix.configuration }}
