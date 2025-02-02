@@ -9,7 +9,7 @@ namespace Tests
 {
     public class Utils
     {
-        public static void Execute(string parameters, out List<string> output)
+        public static int Execute(string parameters, out List<string> output)
         {
             output = new List<string>();
             var process = new System.Diagnostics.Process
@@ -28,6 +28,8 @@ namespace Tests
             {
                 output.Add(process.StandardOutput.ReadLine());
             }
+            process.WaitForExit();
+            return process.ExitCode;
         }
 
         public static void OutputContains(List<string> output, string expected)

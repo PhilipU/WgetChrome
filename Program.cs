@@ -14,7 +14,7 @@ namespace WgetChrome
         {
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {message}");
         }
-        static async Task<bool> Download(string url, string path)
+        static async Task<bool> Download(string url, string path, int timeout)
         {
             var browserFetcher = new BrowserFetcher();
             if (browserFetcher.GetInstalledBrowsers().ToList().Count == 0)
@@ -39,7 +39,17 @@ namespace WgetChrome
             {
                 ConsoleWriteLine($"    Navigate to '{url}'");
                 page = await browser.NewPageAsync();
-                await page.GoToAsync(url);
+                var navigationTask = page.GoToAsync(url, new NavigationOptions
+                {
+                    Timeout = timeout * 1000
+                });
+                if (await Task.WhenAny(navigationTask, Task.Delay(timeout * 1000)) != navigationTask)
+                {
+                    ConsoleWriteLine($"        Failed to navigate to page.");
+                    ConsoleWriteLine($"        Error: Timeout reached");
+                    return false;
+                }
+                await navigationTask;
             }
             catch (Exception e)
             {
@@ -73,9 +83,10 @@ namespace WgetChrome
             {
                 Console.WriteLine("WgetChrome - A simple tool to download rendered web pages using Google Chrome");
                 Console.WriteLine("Usage:");
-                Console.WriteLine("    WgetChrome.exe <URL> [PATH]");
+                Console.WriteLine("    WgetChrome.exe <URL> [PATH] [TIMEOUT]");
                 Console.WriteLine("        URL: The URL of the web page to download");
                 Console.WriteLine("        PATH: The output file path");
+                Console.WriteLine("        TIMEOUT: The timeout in seconds for the navigation");
                 return;
             }
 
@@ -94,19 +105,22 @@ namespace WgetChrome
                 return;
             }
 
-            string path = args.Length > 1 ? args[1] : "output.html...";
+            string path = args.Length > 1 ? args[1] : "output.html";
+            int timeout = args.Length > 2 ? int.Parse(args[2]) : 30;
 
-            ConsoleWriteLine($"Downloading '{url}' to '{path}'");
+            ConsoleWriteLine($"Downloading '{url}' to '{path}'. Timeout={timeout}s");
 
-            bool result = Download(url, path).GetAwaiter().GetResult();
+            bool result = Download(url, path, timeout).GetAwaiter().GetResult();
 
             if (result)
             {
                 ConsoleWriteLine("Download completed successfully");
+                Environment.Exit(0);
             }
             else
             {
                 ConsoleWriteLine("Download failed");
+                Environment.Exit(1);
             }
         }
     }
