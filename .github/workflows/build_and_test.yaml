@@ -49,4 +49,4 @@ jobs:
       run: msbuild ${{ env.Solution_Name }}.sln /p:Configuration=${{ matrix.configuration }}
 
     - name: Execute unit tests
-      run: dotnet test
+      run: dotnet test ${{ env.Test_Project_Path }} --configuration ${{ matrix.configuration }}
