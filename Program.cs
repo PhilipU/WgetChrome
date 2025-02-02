@@ -56,7 +56,7 @@ namespace WgetChrome
                 ConsoleWriteLine("    Saving content to file...");
                 File.WriteAllText(path, content);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ConsoleWriteLine($"        Failed to save page content.");
                 ConsoleWriteLine($"        Error: {e.Message}");
