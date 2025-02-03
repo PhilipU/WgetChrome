@@ -8,8 +8,28 @@ Often web pages loads additional content via Javascript. If these kind of pages 
 
 With WgetChrome.exe the page is accessed via a Chrome Browser instance and downloaded after the page was fully loaded and rendered.
 
+## Usage
+
+```
+> WgetChrome.exe <URL> [PATH] [TIMEOUT]
+```
+
+**URL:** URL to navigate to. E.g. `www.example.com`
+
+**PATH:** Optional local path to save web page. Directory structure must be exist. Default path = `output.html`
+
+**TIMEOUT:** Optional timeout in seconds. Default Timeout = `30s`
+
+## Exit Code
+
+**0:** Download was successful
+
+**1:** Error occurred. Nothing was saved.
+
 ## FAQ
 
 **Q: Do I need to install the Chrome Browser manually?**
 
 **A:** No, the browser will be automatically downloaded and installed by the integrated Puppeteer Sharp library
+when the application is used the first time. This may take ~60sec on the first run.
+The browser will be downloaded to `%LOCALAPPDATA%\PuppeteerSharp` and is reused in further runs.
