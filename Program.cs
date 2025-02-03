@@ -41,7 +41,9 @@ namespace WgetChrome
                 page = await browser.NewPageAsync();
                 var navigationTask = page.GoToAsync(url, new NavigationOptions
                 {
-                    Timeout = timeout * 1000
+                    Timeout = timeout * 1000,
+                    WaitUntil = new[] { WaitUntilNavigation.Networkidle0 }
+
                 });
                 if (await Task.WhenAny(navigationTask, Task.Delay(timeout * 1000)) != navigationTask)
                 {

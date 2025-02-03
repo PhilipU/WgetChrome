@@ -33,8 +33,8 @@ namespace Tests
         [Test]
         public void OutputPathWrong()
         {
-            var exitCode = Utils.Execute("https://example.com/ ./this/path/does/not/exist/example.html 1", out var output);
-            Utils.OutputContains(output, "Timeout=1s");
+            var exitCode = Utils.Execute("https://example.com/ ./this/path/does/not/exist/example.html 5", out var output);
+            Utils.OutputContains(output, "Timeout=5s");
             Utils.OutputContains(output, "Failed to save page content");
 
             Assert.That(1 == exitCode);
