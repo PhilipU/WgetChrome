@@ -24,7 +24,7 @@ Additional options must be passed as `key=value` pair.
 |-----|-------|
 | path | Optional local path to save web page. Directory structure must be exist. Default path = `output.html` |
 | timeout | Optional timeout in seconds. Default Timeout = `30s` |
-| auth | Basic Authentification token passed in HTTP header |
+| auth | Basic Authorization token passed in HTTP header |
 
 ### Examples
 
