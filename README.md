@@ -20,17 +20,30 @@ With WgetChrome.exe the page is accessed via a Chrome Browser instance and downl
 
 Additional options must be passed as `key=value` pair.
 
-|
+| Key | Value |
+|-----|-------|
+| path | Optional local path to save web page. Directory structure must be exist. Default path = `output.html` |
+| timeout | Optional timeout in seconds. Default Timeout = `30s` |
+| auth | Basic Authentification token passed in HTTP header |
 
-**PATH:** Optional local path to save web page. Directory structure must be exist. Default path = `output.html`
+### Examples
 
-**TIMEOUT:** Optional timeout in seconds. Default Timeout = `30s`
+Download page with default settings
+```
+> WgetChrome.exe www.github.com
+```
+
+Download page with authentification
+```
+> WgetChrome.exe www.github.com/myUser/myRepo auth=myBase64GithubAuthToken
+```
 
 ## Exit Code
 
-**0:** Download was successful
-
-**1:** Error occurred. Nothing was saved.
+| Value | Description |
+|-----|-------|
+| 0 | Download was successful |
+| 1 | Error occurred. Nothing was saved. |
 
 ## FAQ
 
