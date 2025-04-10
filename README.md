@@ -11,10 +11,16 @@ With WgetChrome.exe the page is accessed via a Chrome Browser instance and downl
 ## Usage
 
 ```
-> WgetChrome.exe <URL> [PATH] [TIMEOUT]
+> WgetChrome.exe <URL> [OPTIONS]
 ```
 
 **URL:** URL to navigate to. E.g. `www.example.com`
+
+### Options
+
+Additional options must be passed as `key=value` pair.
+
+|
 
 **PATH:** Optional local path to save web page. Directory structure must be exist. Default path = `output.html`
 
