@@ -1,8 +1,11 @@
 ﻿using PuppeteerSharp;
+using PuppeteerSharp.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +17,7 @@ namespace WgetChrome
         {
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {message}");
         }
-        static async Task<bool> Download(string url, string path, int timeout)
+        static async Task<bool> Download(string url, string path, int timeout, string auth)
         {
             var browserFetcher = new BrowserFetcher();
             if (browserFetcher.GetInstalledBrowsers().ToList().Count == 0)
@@ -39,6 +42,18 @@ namespace WgetChrome
             {
                 ConsoleWriteLine($"    Navigate to '{url}'");
                 page = await browser.NewPageAsync();
+
+                if(!string.IsNullOrEmpty(auth))
+                {
+                    Dictionary<string, string> headers = new Dictionary<string, string>
+                    {
+                        { "Authorization", $"Basic {auth}" }
+                    };
+
+                    await page.SetExtraHttpHeadersAsync(headers);
+                }
+
+
                 var navigationTask = page.GoToAsync(url, new NavigationOptions
                 {
                     Timeout = timeout * 1000,
@@ -85,10 +100,14 @@ namespace WgetChrome
             {
                 Console.WriteLine("WgetChrome - A simple tool to download rendered web pages using Google Chrome");
                 Console.WriteLine("Usage:");
-                Console.WriteLine("    WgetChrome.exe <URL> [PATH] [TIMEOUT]");
+                Console.WriteLine("    WgetChrome.exe <URL> [OPTIONS]");
                 Console.WriteLine("        URL: The URL of the web page to download");
-                Console.WriteLine("        PATH: The output file path");
-                Console.WriteLine("        TIMEOUT: The timeout in seconds for the navigation");
+                Console.WriteLine("        OPTIONS: Additional Options as Key=Value pair");
+                Console.WriteLine("            |   Key   |   Value                   |");
+                Console.WriteLine("            |---------|---------------------------|");
+                Console.WriteLine("            | path    | The output file path      |");
+                Console.WriteLine("            | timeout | Timeout in seconds        |");
+                Console.WriteLine("            | auth    | Basic Authorization Token |");
                 return;
             }
 
@@ -107,12 +126,43 @@ namespace WgetChrome
                 return;
             }
 
-            string path = args.Length > 1 ? args[1] : "output.html";
-            int timeout = args.Length > 2 ? int.Parse(args[2]) : 30;
+            // Options
+            //--------
+            string path = "output.html";
+            int timeout = 30;
+            string auth = "";
 
-            ConsoleWriteLine($"Downloading '{url}' to '{path}'. Timeout={timeout}s");
+            // Options Arguments (Key-Value Pairs)
+            //------------------------------------
+            List<string> processedArgs = new List<string>();
 
-            bool result = Download(url, path, timeout).GetAwaiter().GetResult();
+            for(int i = 1; i < args.Length; i++)
+            {
+                if (args[i].StartsWith("path=")) path = args[i].Split('=')[1];
+                else if (args[i].StartsWith("timeout=")) timeout = int.Parse(args[i].Split('=')[1]);
+                else if (args[i].StartsWith("auth=")) auth = args[i].Split('=')[1];
+                else
+                {
+                    processedArgs.Add(args[i]);
+                }
+            }
+
+            // Legacy Arguments
+            //-----------------
+            {
+                if(processedArgs.Count > 0) path = processedArgs[0];
+                if(processedArgs.Count > 1) timeout = int.Parse(processedArgs[1]);
+            }
+
+            string authInfo = "";
+            if(!string.IsNullOrEmpty(auth))
+            {
+                authInfo = "Authorization=True";
+            }
+
+            ConsoleWriteLine($"Downloading '{url}' to '{path}'. Timeout={timeout}s. {authInfo}");
+
+            bool result = Download(url, path, timeout, auth).GetAwaiter().GetResult();
 
             if (result)
             {

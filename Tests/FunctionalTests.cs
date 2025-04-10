@@ -60,5 +60,28 @@ namespace Tests
 
             Assert.That(0 == exitCode);
         }
+
+        [Test]
+        public void NewOptionsFormat()
+        {
+            var exitCode = Utils.Execute("https://example.com/ timeout=5 path=example.html", out var output);
+            Utils.OutputContains(output, "to 'example.html'");
+            Utils.OutputContains(output, "Timeout=5s");
+            Utils.OutputContains(output, "Download completed successfully");
+
+            Assert.That(0 == exitCode);
+        }
+
+        [Test]
+        public void Authorization()
+        {
+            var exitCode = Utils.Execute("https://example.com/ timeout=5 path=example.html auth=1234", out var output);
+            Utils.OutputContains(output, "to 'example.html'");
+            Utils.OutputContains(output, "Timeout=5s");
+            Utils.OutputContains(output, "Authorization=True");
+            Utils.OutputContains(output, "Download completed successfully");
+
+            Assert.That(0 == exitCode);
+        }
     }
 }
